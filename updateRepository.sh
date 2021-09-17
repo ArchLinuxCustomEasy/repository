@@ -85,22 +85,21 @@ chooseOneAction() {
       updateRepository
       synchronizeRepository "${systemRepositoryDir}" "${localRepositoryDir}"
       changeOwner "1000:1000" "${localRepositoryDir}"
-      continue
       ;;
     sync)
       printMessage "Synchronize local repository in system repository"
       rm -rf ${systemRepositoryDir}*
       synchronizeRepository "${localRepositoryDir}" "${systemRepositoryDir}"
-      continue
       ;;
     quit)
       printMessage "All is done!"
-      break
+      exit 0
       ;;
     *)
       echo "Invalid option $REPLY"
       ;;
     esac
+    chooseOneAction
   done
 }
 
