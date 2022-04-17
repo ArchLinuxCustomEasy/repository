@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Name: updateRepository.sh
-# Description: Update the packages repository
+# Description: Update the packages repository in system directory or synchronize system repository with local repository (source of truth)
 # Author: Titux Metal <tituxmetal[at]lgdweb[dot]fr>
 # Url: https://github.com/ArchLinuxCustomEasy/repository
-# Version: 1.0
-# Revision: 2021.09.15
+# Version: 2.0
+# Revision: 2022.04.17
 # License: MIT License
 
 workspace="$HOME/ALICE-workspace"
@@ -13,7 +13,6 @@ localRepositoryDir="$(pwd)/x86_64/"
 systemRepositoryDir="/opt/alice/x86_64/"
 databaseName="alice"
 commandOptions="--new --remove --verify"
-# logFile="$(pwd)/$(date +%T).log"
 
 # Helper function for printing messages $1 The message to print
 printMessage() {
@@ -23,15 +22,6 @@ printMessage() {
   echo -en "${message}\n"
   echo -en "-------------------------------------------\n"
   tput sgr0
-}
-
-isRootUser() {
-  if [[ ! "$EUID" = 0 ]]; then
-    printMessage "Please Run As Root"
-    exit 0
-  fi
-  printMessage "Ok to continue running the script"
-  sleep .5
 }
 
 # Helper function to handle errors
@@ -62,17 +52,9 @@ synchronizeRepository() {
   sleep .5
 }
 
-changeOwner() {
-  newOwner=$1
-  directoryName=$2
-  printMessage "Change owner of ${directoryName} to ${newOwner}"
-  chown -R ${newOwner} ${directoryName}
-  sleep .5
-}
-
 chooseOneAction() {
   update="1. update db in system repository"
-  synchronize="2. sync local repo in system repo"
+  synchronize="2. sync system repo from local repo"
   quit="3. quit now"
   printMessage "${update}\n${synchronize}\n${quit}"
 
@@ -84,10 +66,9 @@ chooseOneAction() {
       cleanup
       updateRepository
       synchronizeRepository "${systemRepositoryDir}" "${localRepositoryDir}"
-      changeOwner "1000:1000" "${localRepositoryDir}"
       ;;
     sync)
-      printMessage "Synchronize local repository in system repository"
+      printMessage "Synchronize system repository from local repository"
       rm -rf ${systemRepositoryDir}*
       synchronizeRepository "${localRepositoryDir}" "${systemRepositoryDir}"
       ;;
