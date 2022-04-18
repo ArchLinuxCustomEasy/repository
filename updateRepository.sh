@@ -48,7 +48,11 @@ synchronizeRepository() {
   local=$1
   target=$2
   printMessage "Synchronize ${local} repository with ${target} repository"
-  rsync -rltv --stats --progress "${local}" "${target}"
+#  rsync -rltv --stats --progress "${local}" "${target}"
+  printMessage "Local: ${local}"
+  printMessage "Target: ${target}"
+  printMessage "Command: cp -Rv ${local}*.zst ${target}"
+  cp -Rv ${local}*.zst ${target}
   sleep .5
 }
 
@@ -65,7 +69,7 @@ chooseOneAction() {
       printMessage "Update repository database in system repository"
       cleanup
       updateRepository
-      synchronizeRepository "${systemRepositoryDir}" "${localRepositoryDir}"
+#      synchronizeRepository "${systemRepositoryDir}" "${localRepositoryDir}"
       ;;
     sync)
       printMessage "Synchronize system repository from local repository"
